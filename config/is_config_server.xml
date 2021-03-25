@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<is>
+    <is_types>
+        <type name="Type">
+            <longlong name="time"/>
+        </type>
+    </is_types>
+
+    <profiles>
+        <participant profile_name="Local">
+            <rtps>
+                <builtin>
+                    <domainId>3</domainId>
+                </builtin>
+            </rtps>
+        </participant>
+
+        <participant profile_name="LocalPub">
+            <rtps>
+                <builtin>
+                    <domainId>2</domainId>
+                </builtin>
+            </rtps>
+        </participant>
+
+        <subscriber profile_name="subscriber">
+            <topic>
+                <name>TypePubSubTopic</name>
+                <dataType>Type</dataType>
+                <kind>NO_KEY</kind>
+            </topic>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        </subscriber>
+
+        <publisher profile_name="publisher">
+            <topic>
+                <name>TypePubSubTopic</name>
+                <dataType>Type</dataType>
+                <kind>NO_KEY</kind>
+            </topic>
+            <historyMemoryPolicy>DYNAMIC</historyMemoryPolicy>
+        </publisher>
+
+        
+
+    </profiles>
+
+    <bridge name="protocol">
+      <library>../build/libis_udp_bridge.so</library>
+      <properties>
+         <property>
+            <name>SERVER</name>
+            <value>TRUE</value>
+         </property>
+         <property>
+            <name>SERVER_PORT</name>
+            <value>51001</value>
+         </property>
+      </properties>
+
+      <writer name="protocol_writer"></writer>
+
+      <reader name="protocol_reader"></reader>
+   </bridge>
+
+    <connector name="UDPConnector">
+        <reader participant_profile="Local" subscriber_profile="subscriber"/>
+        <writer bridge_name="protocol" writer_name="protocol_writer"/>
+    </connector>
+
+    <connector name="UDPConnector">
+        <reader bridge_name="protocol" reader_name="protocol_reader"/>
+        <writer participant_profile="LocalPub" publisher_profile="publisher"/>
+    </connector>
+</is>
